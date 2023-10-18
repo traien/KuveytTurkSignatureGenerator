@@ -59,6 +59,11 @@ public class SignatureGeneratorUtility
 
     private static string SignSHA256RSA(string input, string privateKey)
     {
+        privateKey = privateKey
+            .Replace("-----BEGIN PRIVATE KEY-----", "")
+            .Replace("-----END PRIVATE KEY-----", "")
+            .Replace("\n", "");
+        
         using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
 
         rsa.ImportPkcs8PrivateKey(Convert.FromBase64String(privateKey), out _);

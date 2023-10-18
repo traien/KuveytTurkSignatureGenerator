@@ -1,0 +1,62 @@
+name: NuGet Publish
+
+on:
+  push:
+    branches:
+      - master
+
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '7.0.x' # Replace with the desired .NET 7 version
+
+      - name: Get Package Version from .csproj
+        id: version
+        run: |
+          PACKAGE_VERSION=$(cat KuveytTurkSignatureGenerator.csproj | grep -oPm1 "(?<=<Version>)[^<]+")
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "Package Version: $PACKAGE_VERSION"
+        shell: bash
+
+      - name: Build and Publish NuGet package
+        run: |
+          dotnet build -c Release
+          dotnet pack -c Release
+        continue-on-error: true
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ env.PACKAGE_VERSION }}
+          release_name: v${{ env.PACKAGE_VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload NuGet Package
+        run: |
+          nugetApiKey=$NUGET_API_KEY
+          dotnet nuget push **/*.nupkg -k $nugetApiKey -s https://api.nuget.org/v3/index.json
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts
+          path: |
+            **/*.nupkg
+            **/bin/Release/*.dll
