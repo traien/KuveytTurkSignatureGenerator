@@ -26,6 +26,7 @@ jobs:
         run: |
           PACKAGE_VERSION=$(cat KuveytTurkSignatureGenerator.csproj | grep -oPm1 "(?<=<Version>)[^<]+")
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "Package Version: $PACKAGE_VERSION"
         shell: bash
 
       - name: Build and Publish NuGet package
