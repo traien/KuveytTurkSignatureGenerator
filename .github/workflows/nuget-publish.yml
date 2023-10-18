@@ -49,4 +49,3 @@ jobs:
           dotnet nuget push $nugetPackage -k $nugetApiKey -s https://api.nuget.org/v3/index.json
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        if: steps.version.outputs.PACKAGE_VERSION != ''
