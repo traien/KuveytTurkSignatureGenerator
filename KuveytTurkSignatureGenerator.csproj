@@ -7,7 +7,7 @@
         <RootNamespace>SignatureGenerator.KuveytTurk</RootNamespace>
         <AssemblyName>SignatureGenerator.KuveytTurk</AssemblyName>
         <PackageId>SignatureGenerator.KuveytTurk</PackageId>
-        <Version>1.0.0</Version>
+        <Version>1.0.1</Version>
         <Authors>Osama Bashir</Authors>
         <Product>Signature Generator KuveytTurk</Product>
         <Description>
