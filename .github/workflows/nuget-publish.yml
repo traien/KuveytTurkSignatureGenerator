@@ -29,7 +29,7 @@ jobs:
       - name: Get Package Version
         id: version
         run: |
-          echo ::set-output name=version::$(dotnet nuget push --list-source | grep 'Available versions' | sed 's/Available versions: //')
+          echo "PACKAGE_VERSION=$(dotnet nuget push --list-source | grep 'Available versions' | sed 's/Available versions: //')" >> $GITHUB_ENV
         shell: bash
 
       - name: Create GitHub Release
@@ -37,9 +37,10 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: '**/*.nupkg'
-          name: Release ${{ steps.version.outputs.version }}
-          tag_name: v${{ steps.version.outputs.version }}
+          name: Release ${{ env.PACKAGE_VERSION }}
+          tag_name: v${{ env.PACKAGE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
+        if: steps.version.outputs.PACKAGE_VERSION != ''
 
       - name: Upload NuGet Package
         run: |
@@ -48,3 +49,4 @@ jobs:
           dotnet nuget push $nugetPackage -k $nugetApiKey -s https://api.nuget.org/v3/index.json
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        if: steps.version.outputs.PACKAGE_VERSION != ''
