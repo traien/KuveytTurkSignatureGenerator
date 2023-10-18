@@ -1,0 +1,40 @@
+name: NuGet Publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x' # Replace with your desired .NET version
+
+      - name: Build and Publish NuGet package
+        run: |
+          dotnet build -c Release
+          dotnet pack -c Release
+        working-directory: src/YourProjectName # Replace with your project directory
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: '**/*.nupkg'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload NuGet Package
+        run: |
+          nugetApiKey=$NUGET_API_KEY
+          nugetPackage=${{ steps.create_release.outputs.assets }}
+          dotnet nuget push $nugetPackage -k $nugetApiKey -s https://api.nuget.org/v3/index.json
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
