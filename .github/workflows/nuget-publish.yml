@@ -2,6 +2,9 @@ name: NuGet Publish
 
 on:
   push:
+    branches:
+      - master
+
     tags:
       - '*'
 
@@ -22,7 +25,6 @@ jobs:
         run: |
           dotnet build -c Release
           dotnet pack -c Release
-        working-directory: src/KuveytTurkSignatureGenerator # Replace with your project directory
 
       - name: Get Package Version
         id: version
