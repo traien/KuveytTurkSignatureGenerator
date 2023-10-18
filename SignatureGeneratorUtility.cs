@@ -1,11 +1,13 @@
 using System.Security.Cryptography;
 using System.Text;
+using SignatureGenerator.KuveytTurk.Exceptions;
+using SignatureGenerator.KuveytTurk.Models;
 
 namespace SignatureGenerator.KuveytTurk;
 
 public class SignatureGeneratorUtility
 {
-    public static string GenerateApiRequestSignature(string httpMethod, string accessToken, string privateKey, string requestBody = null, string apiEndpointUrl = null)
+    public static string GenerateApiRequestSignature(string httpMethod, string accessToken, string privateKey, string apiEndpointUrl = null, string requestBody = null)
     {
         try
         {
@@ -15,7 +17,8 @@ public class SignatureGeneratorUtility
             {
                 return GenerateSignature(accessToken, privateKey, requestBody);
             }
-            else if (httpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase))
+
+            if (httpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase))
             {
                 return GenerateGetSignature(accessToken, privateKey, apiEndpointUrl);
             }
@@ -48,7 +51,7 @@ public class SignatureGeneratorUtility
 
     private static string GenerateGetSignature(string accessToken, string privateKey, string apiEndpointUrl)
     {
-        var queryParams = new QueryParameterListBean(apiEndpointUrl);
+        var queryParams = new QueryParameterList(apiEndpointUrl);
         string queryString = GetQueryParamsString(queryParams);
         string input = accessToken + queryString;
         return SignSHA256RSA(input, privateKey);
@@ -56,18 +59,19 @@ public class SignatureGeneratorUtility
 
     private static string SignSHA256RSA(string input, string privateKey)
     {
-        using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
-        {
-            rsa.ImportPkcs8PrivateKey(Convert.FromBase64String(privateKey), out _);
-            byte[] data = Encoding.UTF8.GetBytes(input);
-            byte[] signatureBytes = rsa.SignData(data, new SHA256CryptoServiceProvider());
-            return Convert.ToBase64String(signatureBytes);
-        }
+        using RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+
+        rsa.ImportPkcs8PrivateKey(Convert.FromBase64String(privateKey), out _);
+
+        byte[] data = Encoding.UTF8.GetBytes(input);
+        byte[] signatureBytes = rsa.SignData(data, new SHA256CryptoServiceProvider());
+
+        return Convert.ToBase64String(signatureBytes);
     }
 
-    private static string GetQueryParamsString(QueryParameterListBean queryParams)
+    private static string GetQueryParamsString(QueryParameterList queryParams)
     {
-        List<QueryParameterBean> queryParamsList = queryParams.ToList();
+        List<QueryParameter> queryParamsList = queryParams.ToList();
         if (queryParamsList.Count > 0)
         {
             return "?" + string.Join("&", queryParamsList);

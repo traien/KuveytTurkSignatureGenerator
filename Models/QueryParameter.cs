@@ -1,15 +1,15 @@
-namespace SignatureGenerator.KuveytTurk;
+namespace SignatureGenerator.KuveytTurk.Models;
 
-public class QueryParameterBean
+public class QueryParameter
 {
     public string ParamName { get; set; }
     public string ParamValue { get; set; }
 
-    public QueryParameterBean()
+    public QueryParameter()
     {
     }
 
-    public QueryParameterBean(string paramName, string paramValue)
+    public QueryParameter(string paramName, string paramValue)
     {
         ParamName = paramName;
         ParamValue = paramValue;

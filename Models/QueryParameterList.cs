@@ -1,15 +1,17 @@
-namespace SignatureGenerator.KuveytTurk;
+using SignatureGenerator.KuveytTurk.Exceptions;
 
-public class QueryParameterListBean
+namespace SignatureGenerator.KuveytTurk.Models;
+
+public class QueryParameterList
 {
     private readonly Dictionary<string, object> parameters;
 
-    public QueryParameterListBean()
+    public QueryParameterList()
     {
         parameters = new Dictionary<string, object>();
     }
 
-    public QueryParameterListBean(string apiEndpointUrl)
+    public QueryParameterList(string apiEndpointUrl)
         : this()
     {
         ParseApiEndpointUrl(apiEndpointUrl);
@@ -57,7 +59,7 @@ public class QueryParameterListBean
         }
     }
 
-    public QueryParameterListBean Add(QueryParameterBean bean)
+    public QueryParameterList Add(QueryParameter bean)
     {
         if (bean != null)
         {
@@ -67,13 +69,13 @@ public class QueryParameterListBean
         return this;
     }
 
-    public QueryParameterListBean Remove(string key)
+    public QueryParameterList Remove(string key)
     {
         parameters.Remove(key);
         return this;
     }
 
-    public QueryParameterListBean Clear()
+    public QueryParameterList Clear()
     {
         parameters.Clear();
         return this;
@@ -81,14 +83,14 @@ public class QueryParameterListBean
 
     public bool IsEmpty => parameters.Count == 0;
 
-    public List<QueryParameterBean> ToList()
+    public List<QueryParameter> ToList()
     {
-        return parameters.Select(kv => new QueryParameterBean(kv.Key, kv.Value.ToString())).ToList();
+        return parameters.Select(kv => new QueryParameter(kv.Key, kv.Value.ToString())).ToList();
     }
 
     public override string ToString()
     {
-        List<QueryParameterBean> queryParams = ToList();
+        List<QueryParameter> queryParams = ToList();
 
         if (queryParams != null && queryParams.Count > 0)
         {

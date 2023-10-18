@@ -1,4 +1,4 @@
-namespace SignatureGenerator.KuveytTurk;
+namespace SignatureGenerator.KuveytTurk.Exceptions;
 
 public class SignatureGenerationException : Exception
 {

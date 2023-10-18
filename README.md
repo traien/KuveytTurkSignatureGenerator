@@ -35,7 +35,7 @@ try
     string requestBody = "request-body"; // Required for POST requests
     string apiEndpointUrl = "api-endpoint-url"; // Required for GET requests with query parameters
 
-    string signature = SignatureGeneratorUtility.GenerateApiRequestSignature(httpMethod, accessToken, privateKey, requestBody, apiEndpointUrl);
+    string signature = SignatureGeneratorUtility.GenerateApiRequestSignature(httpMethod, accessToken, privateKey, apiEndpointUrl, requestBody);
 
     Console.WriteLine("Generated Signature:");
     Console.WriteLine(signature);
@@ -93,7 +93,7 @@ class Program
             string requestBody = "{ \"key\": \"value\" }"; // Replace with your actual request body
             string apiEndpointUrl = "https://api.example.com/endpoint?param1=value1&param2=value2"; // Replace with your actual API endpoint URL
 
-            string signature = SignatureGeneratorUtility.GenerateApiRequestSignature(httpMethod, accessToken, privateKey, requestBody, apiEndpointUrl);
+            string signature = SignatureGeneratorUtility.GenerateApiRequestSignature(httpMethod, accessToken, privateKey, apiEndpointUrl, requestBody);
 
             Console.WriteLine("Generated Signature:");
             Console.WriteLine(signature);
