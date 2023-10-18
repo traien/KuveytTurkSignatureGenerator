@@ -7,7 +7,6 @@
         <RootNamespace>SignatureGenerator.KuveytTurk</RootNamespace>
         <AssemblyName>SignatureGenerator.KuveytTurk</AssemblyName>
         <PackageId>SignatureGenerator.KuveytTurk</PackageId>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Version>1.0.0</Version>
