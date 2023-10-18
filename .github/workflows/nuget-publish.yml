@@ -42,7 +42,6 @@ jobs:
           name: Release ${{ env.PACKAGE_VERSION }}
           tag_name: v${{ env.PACKAGE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-        if: steps.version.outputs.PACKAGE_VERSION != ''
 
       - name: Upload NuGet Package
         run: |
@@ -51,4 +50,3 @@ jobs:
           dotnet nuget push $nugetPackage -k $nugetApiKey -s https://api.nuget.org/v3/index.json
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        if: steps.version.outputs.PACKAGE_VERSION != ''
