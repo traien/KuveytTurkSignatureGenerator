@@ -22,7 +22,7 @@ jobs:
         run: |
           dotnet build -c Release
           dotnet pack -c Release
-        working-directory: src/YourProjectName # Replace with your project directory
+        working-directory: src/KuveytTurkSignatureGenerator # Replace with your project directory
 
       - name: Get Package Version
         id: version
