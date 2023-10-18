@@ -1,0 +1,78 @@
+using System.Security.Cryptography;
+using System.Text;
+
+namespace SignatureGenerator.KuveytTurk;
+
+public class SignatureGeneratorUtility
+{
+    public static string GenerateApiRequestSignature(string httpMethod, string accessToken, string privateKey, string requestBody = null, string apiEndpointUrl = null)
+    {
+        try
+        {
+            ValidateInputs(httpMethod, accessToken, privateKey, requestBody, apiEndpointUrl);
+
+            if (httpMethod.Equals("POST", StringComparison.OrdinalIgnoreCase))
+            {
+                return GenerateSignature(accessToken, privateKey, requestBody);
+            }
+            else if (httpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase))
+            {
+                return GenerateGetSignature(accessToken, privateKey, apiEndpointUrl);
+            }
+
+            throw new SignatureGenerationException("Invalid HTTP method selected.");
+        }
+        catch (SignatureGenerationException e)
+        {
+            throw e;
+        }
+    }
+
+    private static void ValidateInputs(string httpMethod, string accessToken, string privateKey, string requestBody, string apiEndpointUrl)
+    {
+        if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(privateKey))
+            throw new SignatureGenerationException("Access token and private key are required.");
+
+        if (httpMethod.Equals("POST", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(requestBody))
+            throw new SignatureGenerationException("Request body is required for POST requests.");
+
+        if (httpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(apiEndpointUrl))
+            throw new SignatureGenerationException("API endpoint URL is required for GET requests.");
+    }
+
+    private static string GenerateSignature(string accessToken, string privateKey, string requestBody)
+    {
+        string input = accessToken + requestBody;
+        return SignSHA256RSA(input, privateKey);
+    }
+
+    private static string GenerateGetSignature(string accessToken, string privateKey, string apiEndpointUrl)
+    {
+        var queryParams = new QueryParameterListBean(apiEndpointUrl);
+        string queryString = GetQueryParamsString(queryParams);
+        string input = accessToken + queryString;
+        return SignSHA256RSA(input, privateKey);
+    }
+
+    private static string SignSHA256RSA(string input, string privateKey)
+    {
+        using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+        {
+            rsa.ImportPkcs8PrivateKey(Convert.FromBase64String(privateKey), out _);
+            byte[] data = Encoding.UTF8.GetBytes(input);
+            byte[] signatureBytes = rsa.SignData(data, new SHA256CryptoServiceProvider());
+            return Convert.ToBase64String(signatureBytes);
+        }
+    }
+
+    private static string GetQueryParamsString(QueryParameterListBean queryParams)
+    {
+        List<QueryParameterBean> queryParamsList = queryParams.ToList();
+        if (queryParamsList.Count > 0)
+        {
+            return "?" + string.Join("&", queryParamsList);
+        }
+
+        return "";
+    }
+}
